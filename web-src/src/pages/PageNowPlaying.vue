@@ -4,6 +4,14 @@
       <div class="container has-text-centered fd-has-margin-top">
         <h1 class="title is-4">
           {{ now_playing.title }}
+          <div class="fd-has-padding-left-right"><star-rating v-model="rating"
+            :star-size="17"
+            :padding="3"
+            :show-rating="false"
+            :max-rating="5"
+            :increment="0.5"
+            :inline="true"
+            @rating-selected="rate_track"></star-rating></div>
         </h1>
         <h2 class="title is-6">
           {{ now_playing.artist }}
@@ -32,7 +40,7 @@
             min="0"
             :max="state.item_length_ms"
             :value="item_progress_ms"
-            :disabled="state.state === 'stop'"
+            :disabled="state.state === 'stop' || seeking"
             step="1000"
             @change="seek" >
           </range-slider>
@@ -63,18 +71,22 @@ import PlayerButtonShuffle from '@/components/PlayerButtonShuffle'
 import PlayerButtonConsume from '@/components/PlayerButtonConsume'
 import PlayerButtonRepeat from '@/components/PlayerButtonRepeat'
 import RangeSlider from 'vue-range-slider'
+import StarRating from 'vue-star-rating'
 import webapi from '@/webapi'
 import * as types from '@/store/mutation_types'
 
 export default {
   name: 'PageNowPlaying',
-  components: { ModalDialogQueueItem, PlayerButtonPlayPause, PlayerButtonNext, PlayerButtonPrevious, PlayerButtonShuffle, PlayerButtonConsume, PlayerButtonRepeat, RangeSlider },
+  components: { ModalDialogQueueItem, PlayerButtonPlayPause, PlayerButtonNext, PlayerButtonPrevious, PlayerButtonShuffle, PlayerButtonConsume, PlayerButtonRepeat, RangeSlider, StarRating },
 
   data () {
     return {
       item_progress_ms: 0,
       interval_id: 0,
       artwork_visible: false,
+
+      rating: 0,
+      is_seeking: false,
 
       show_details_modal: false,
       selected_item: {}
@@ -111,6 +123,10 @@ export default {
         return this.now_playing.artwork_url + '?maxwidth=600&maxheight=600'
       }
       return this.now_playing.artwork_url
+    },
+
+    seeking: function () {
+      return this.is_seeking
     }
   },
 
@@ -120,8 +136,13 @@ export default {
     },
 
     seek: function (newPosition) {
-      webapi.player_seek(newPosition).catch(() => {
+      this.is_seeking = true
+      this.item_progress_ms = newPosition
+      webapi.player_seek(newPosition).then(() => {
+        this.is_seeking = false
+      }).catch(() => {
         this.item_progress_ms = this.state.item_progress_ms
+        this.is_seeking = false
       })
     },
 
@@ -131,6 +152,15 @@ export default {
 
     artwork_error: function () {
       this.artwork_visible = false
+    },
+
+    rate_track: function (rating) {
+      if (rating === 0.5) {
+        rating = 0
+      }
+      this.rating = Math.ceil(rating)
+      this.state.item_rating = this.rating * 20
+      webapi.library_track_set_rating(this.now_playing.track_id, this.rating * 20)
     },
 
     open_dialog: function (item) {
@@ -149,6 +179,7 @@ export default {
       if (this.state.state === 'play') {
         this.interval_id = window.setInterval(this.tick, 1000)
       }
+      this.rating = this.state.item_rating / 20
     }
   }
 }
