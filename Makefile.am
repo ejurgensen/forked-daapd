@@ -8,7 +8,7 @@ sysconf_DATA = $(CONF_FILE)
 
 BUILT_SOURCES = $(CONF_FILE) $(SYSTEMD_SERVICE_FILE)
 
-SUBDIRS = sqlext src htdocs
+SUBDIRS = sqlext src web-src
 
 dist_man_MANS = forked-daapd.8
 

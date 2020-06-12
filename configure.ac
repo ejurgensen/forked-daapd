@@ -355,6 +355,19 @@ FORK_ARG_DISABLE([Include default web interface], [webinterface], [WEBINTERFACE]
 	])
 AM_CONDITIONAL([COND_WEBINTERFACE], [[test "x$enable_webinterface" = "xyes"]])
 
+AC_PATH_PROG([NPM], [[npm]])
+AS_IF([[test -z "$NPM"]],
+	[AS_IF([[test "x$enable_webinterface" = "xyes"]],
+		[AS_IF([[test -f "$srcdir/web-src/htdocs/index.html"]],
+			[AM_MISSING_PROG([NPM], [[npm]])
+			AC_MSG_NOTICE([[
+	
+npm not found, but it's output appears to be present.
+If you modify any web-src files, you will need to install it.]])],
+			[AC_MSG_ERROR([[npm required for web interface, please install it (or use --disable-webinterface).]])])
+		])
+	])
+
 dnl Defining users and groups
 AC_ARG_WITH([daapd_user],
 	[AS_HELP_STRING([--with-daapd-user=USER],
@@ -373,8 +386,8 @@ dnl --- End options ---
 
 AC_CONFIG_FILES([
 	src/Makefile
+	web-src/Makefile
 	sqlext/Makefile
-	htdocs/Makefile
 	Makefile
 	forked-daapd.spec
 ])
