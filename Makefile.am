@@ -15,12 +15,28 @@ dist_man_MANS = owntone.8
 nobase_dist_doc_DATA = \
 	UPGRADING \
 	README.md \
-	README_JSON_API.md \
-	README_PULSE.md \
-	README_ALSA.md \
-	README_SMARTPL.md \
-	README_PLAYER_WEBINTERFACE.md \
-	README_RADIO_STREAMS.md \
+	docs/alsa.md \
+	docs/api.md \
+	docs/artwork.md \
+	docs/cli.md \
+	docs/clients.md \
+	docs/forked-daapd-swagger.yaml \
+	docs/getting_started.md \
+	docs/index.md \
+	docs/install.md \
+	docs/lastfm.md \
+	docs/library.md \
+	docs/mpd.md \
+	docs/outputs.md \
+	docs/playlists.md \
+	docs/pulse.md \
+	docs/remote_access.md \
+	docs/remote.md \
+	docs/smartpl.md \
+	docs/spotify.md \
+	docs/streams.md \
+	docs/swagger.md \
+	docs/webinterface.md \
 	scripts/pairinghelper.sh
 
 EXTRA_DIST = \
