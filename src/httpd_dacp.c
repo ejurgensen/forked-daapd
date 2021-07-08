@@ -299,6 +299,7 @@ dacp_queueitem_add(const char *query, const char *queuefilter, const char *sort,
   int len;
   char buf[1024];
   struct player_status status;
+  uint32_t count;
 
   if (query)
     {
@@ -409,8 +410,9 @@ dacp_queueitem_add(const char *query, const char *queuefilter, const char *sort,
     }
 
   player_get_status(&status);
-
-  if (mode == 3)
+  count = 0;
+  db_queue_get_count(&count);
+  if (mode == 3 && count > 0)
     ret = db_queue_add_by_queryafteritemid(&qp, status.item_id);
   else
     ret = db_queue_add_by_query(&qp, status.shuffle, status.item_id, -1, NULL, NULL);
