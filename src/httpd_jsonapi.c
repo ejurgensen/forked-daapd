@@ -1176,7 +1176,14 @@ jsonapi_reply_library(struct httpd_request *hreq)
 static int
 jsonapi_reply_update(struct httpd_request *hreq)
 {
-  library_rescan();
+  char *param;
+
+  param = evhttp_find_header(hreq->query, "path");
+  if (param)
+    library_rescan_path(param);
+  else
+    library_rescan();
+
   return HTTP_NOCONTENT;
 }
 

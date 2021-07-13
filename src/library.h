@@ -89,6 +89,11 @@ struct library_source
   int (*fullrescan)(void);
 
   /*
+   * Run rescan (called from the library thread)
+   */
+  int (*rescan_path)(const char *path);
+
+  /*
    * Add an item to the library
    */
   int (*item_add)(const char *path);
@@ -155,6 +160,9 @@ library_is_exiting();
 
 void
 library_rescan();
+
+void
+library_rescan_path(const char *path);
 
 void
 library_metarescan();
